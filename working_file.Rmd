@@ -1,0 +1,50 @@
+# Respiratory Diseases and Conditions Correlated to Rise in Wildfires
+
+##Data Used
+
+CDC Datasets
+
+<https://data.cdc.gov/Environmental-Health-Toxicology/Daily-County-Level-PM2-5-Concentrations-2001-2019/dqwm-pbi7/about_data>
+
+```{r}
+library(readr)
+County_PM_Levels <- read_csv("Daily_County-Level_PM2.5_Concentrations__2001-2019_20241023.csv")
+```
+
+
+After importing my first file, I made a tibble with a sample to test cleaning and reordering the data. First I split up the "date" column and made new columns for months and days
+
+```{r}
+set.seed(1234)
+date_preview <- slice_sample(County_PM_Levels, n=30)
+date_preview <- mutate(date_preview, year_month_day = dmy(date))
+date_preview <- mutate(date_preview, month = month(year_month_day))
+date_preview <- mutate(date_preview, day = day(year_month_day))
+```
+
+Then removed the old columns "date" and "year_month_day", and made a "test" object reordered the new columns to sit next to "year"
+
+```{r}
+date_preview <- select(date_preview, !c(date, year_month_day))
+date_preview <- select(date_preview, year,month,day, everything())
+```
+
+Final changes committed to County_PM_Levels dataset from the code template
+
+```{r}
+
+```
+
+Gpkg file with state and county IDs imported with sf package 
+
+```{r}
+counties <- st_read("counties.gpkg")
+```
+
+county and state ID columns changed from character to numeric, original removed 
+
+```{r}
+counties_numeric <- counties %>% mutate(statefp = as.numeric(statefp)) %>% mutate(countyfp = as.numeric(countyfp))
+remove(counties)
+```
+
